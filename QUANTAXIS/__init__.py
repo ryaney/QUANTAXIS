@@ -304,8 +304,8 @@ from QUANTAXIS.QAFactor.utils import QA_fmt_code_list
 
 #from QUANTAXIS.QAFetch.QATdx_adv import bat
 
-if sys.version_info.major != 3 or sys.version_info.minor not in [4, 5, 6, 7, 8]:
-    print('wrong version, should be 3.4/3.5/3.6/3.7/3.8 version')
+if sys.version_info.major != 3 or sys.version_info.minor not in [4, 5, 6, 7, 8, 9]:
+    print('wrong version, should be 3.4/3.5/3.6/3.7/3.8/3.9 version')
     sys.exit()
 
 #QA_util_log_info('Welcome to QUANTAXIS, the Version is {}'.format(__version__))

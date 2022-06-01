@@ -684,3 +684,6 @@ def sourcecpy(src, des):
 def QA_cmd():
     cli = CLI()
     cli.cmdloop()
+
+if __name__ == "__main__":
+    QA_cmd()

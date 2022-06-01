@@ -25,7 +25,7 @@ class quotation_base_test(unittest.TestCase):
     def test_quotation_base_class(self):
 
 
-        df_from_Tdx = QA.QA_quotation('300439', '2018-04-01', '2018-04-10', frequence=FREQUENCE.DAY,
+        df_from_Tdx = QA.QA_quotation('000001', '2022-04-01', '2018-04-10', frequence=FREQUENCE.DAY,
                                    market=MARKET_TYPE.STOCK_CN, source=DATASOURCE.TDX, output=OUTPUT_FORMAT.DATAFRAME)
 
 
