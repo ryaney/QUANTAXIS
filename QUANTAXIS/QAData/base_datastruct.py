@@ -845,7 +845,7 @@ class _quotation_base():
             as_index=as_index,
             sort=sort,
             group_keys=group_keys,
-            squeeze=squeeze
+            # squeeze=squeeze
         )
 
     def new(self, data=None, dtype=None, if_fq=None):

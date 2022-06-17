@@ -1,0 +1,3 @@
+#
+
+from QUANTAXIS.QARealtimeCollector.datahandler.realtime_resampler import QARTC_Resampler

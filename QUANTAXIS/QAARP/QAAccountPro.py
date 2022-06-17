@@ -149,7 +149,8 @@ class QA_AccountPRO(QA_Worker):
         self.init_cash = init_cash
         self.init_hold = pd.Series(
             init_hold,
-            name='amount'
+            name='amount',
+            dtype='float64'
         ) if isinstance(init_hold,
                         dict) else init_hold
         self.init_hold.index.name = 'code'
@@ -634,7 +635,8 @@ class QA_AccountPRO(QA_Worker):
             pd.Series(
                 data=None,
                 index=pd.to_datetime(self.trade_range_max).set_names('date'),
-                name='predrop'
+                name='predrop',
+                dtype='float64'
             )
         )
         ri = res.set_index('date')
@@ -670,7 +672,8 @@ class QA_AccountPRO(QA_Worker):
                     data=None,
                     index=pd.to_datetime(self.trade_range_max
                                          ).set_names('date'),
-                    name='predrop'
+                    name='predrop',
+                    dtype='float64'
                 )
             )
             ri = res.reset_index().set_index('date')
@@ -1469,7 +1472,7 @@ class QA_AccountPRO(QA_Worker):
             message.get('init_assets',
                         1000000)
         )                                       # 兼容修改
-        self.init_hold = pd.Series(message.get('init_hold', {}), name='amount')
+        self.init_hold = pd.Series(message.get('init_hold', {}), name='amount', dtype='float64')
         self.init_hold.index.name = 'code'
         self.commission_coeff = message.get('commission_coeff', 0.00015)
         self.tax_coeff = message.get('tax_coeff', 0.0015)
