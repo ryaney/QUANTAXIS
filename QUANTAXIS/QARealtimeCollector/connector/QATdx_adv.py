@@ -45,7 +45,11 @@ from threading import Thread, Timer
 
 import click
 import pandas as pd
+import pymongo
+
 from QUANTAXIS.QAEngine.QAThreadEngine import QA_Thread
+from QUANTAXIS.QAFetch.QATdx import QA_fetch_get_stock_min, get_mainmarket_ip
+from QUANTAXIS.QASU.save_tdx import now_time
 from QUANTAXIS.QAUtil.QADate_trade import QA_util_if_tradetime
 from QUANTAXIS.QAUtil.QASetting import DATABASE, stock_ip_list
 from QUANTAXIS.QAUtil.QASql import QA_util_sql_mongo_sort_ASCENDING
@@ -157,16 +161,13 @@ class QA_Tdx_Executor(QA_Thread):
     def api_worker(self):
         # data = []
         if self._queue.qsize() < 80:
-            for item in stock_ip_list:
-                if self._queue.full():
-                    break
-                _sec = self._test_speed(ip=item['ip'], port=item['port'])
-                if _sec < self.timeout*3:
-                    try:
-                        self._queue.put(TdxHq_API(heartbeat=False).connect(
-                            ip=item['ip'], port=item['port'], time_out=self.timeout*2))
-                    except:
-                        pass
+            ip, port = get_mainmarket_ip(None, None)
+            if self._queue.full():
+                return
+            try:
+                self._queue.put(TdxHq_API(heartbeat=False).connect(ip, port, time_out=self.timeout*2))
+            except:
+                pass
         else:
             self._queue_clean()
             Timer(0, self.api_worker).start()
@@ -234,6 +235,57 @@ class QA_Tdx_Executor(QA_Thread):
                 # ]).assign(code=_code, update=_request_time)
                 context.append(data)
                 # record the dta
+                filename = get_file_name_by_date('stock.pytdx.%s.csv', os.path.join(os.path.expanduser('~'), './log/'))
+                logging_csv(data, filename, index=False, mode='a')
+            return context
+        except:
+            raise Exception
+
+    def QA_get_security_bar_concurrent(self, code_list, _type, lens):
+        """
+
+        :param code_list:
+        :param _type:
+        :param lens:
+        :return: [Dataframe, df, df]
+        """
+
+        coll = DATABASE.stock_min
+        coll.create_index(
+            [
+                ('code',
+                 pymongo.ASCENDING),
+                ('time_stamp',
+                 pymongo.ASCENDING),
+                ('date_stamp',
+                 pymongo.ASCENDING)
+            ]
+        )
+
+        try:
+            context = []
+            for item in code_list:
+                _code = str(item)
+                _request_time = datetime.datetime.now().isoformat(sep=' ', timespec='seconds')
+
+                ref_ = coll.find({'code': str(_code)[0:6], 'type': _type})
+                end_time = str(now_time())[0:19]
+                if ref_.count() > 0:
+                    start_time = ref_[ref_.count() - 1]['datetime']
+                    _data = QA_fetch_get_stock_min(_code, start_time, end_time)
+
+                data = pd.concat([
+                    pd.DataFrame(i.result()) for i in _data if i is not None
+                ]).assign(code=_code, update=_request_time)
+
+                # data = pd.concat([
+                #     self.api_no_connection.to_df(i.result()) for i in _data if i is not None
+                # ]).assign(code=_code, update=_request_time)
+
+                context.append(data)
+
+                # record the dta
+
                 filename = get_file_name_by_date('stock.pytdx.%s.csv', os.path.join(os.path.expanduser('~'), './log/'))
                 logging_csv(data, filename, index=False, mode='a')
             return context

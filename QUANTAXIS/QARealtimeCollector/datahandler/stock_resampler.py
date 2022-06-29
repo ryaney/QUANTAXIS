@@ -14,17 +14,23 @@ import json
 import logging
 import multiprocessing
 import os
+import re
 import threading
 import time
+from json import JSONEncoder, JSONDecoder
+from json.decoder import FLAGS
 
 import click
+import dateutil
 import pandas as pd
-from QAPUBSUB.consumer import subscriber, subscriber_routing
-from QAPUBSUB.producer import publisher
-from QARealtimeCollector.setting import eventmq_ip
+
+from QUANTAXIS import QA_util_to_json_from_pandas
+from QUANTAXIS.QAPUBSUB.consumer import subscriber, subscriber_routing
+from QUANTAXIS.QAPUBSUB.producer import publisher
+from QUANTAXIS.QARealtimeCollector.setting import eventmq_ip
 from QUANTAXIS.QAEngine.QAThreadEngine import QA_Thread
 
-from utils.common import create_empty_stock_df, tdx_stock_bar_resample_parallel, util_is_trade_time, \
+from QUANTAXIS.QARealtimeCollector.utils.common import create_empty_stock_df, tdx_stock_bar_resample_parallel, util_is_trade_time, \
     get_file_name_by_date, logging_csv
 
 logger = logging.getLogger(__name__)
@@ -82,7 +88,9 @@ class QARTCStockBarResampler(QA_Thread):
 
 
     def publish_msg(self, text):
-        self.pub.pub(text)
+        # data = QA_util_to_json_from_pandas(text.reset_index())
+        print(json.dumps(text.reset_index().to_dict(orient='records'), cls=QAJSONEncoder))
+        self.pub.pub(json.dumps(text.reset_index().to_dict(orient='records'), cls=QAJSONEncoder))
 
     def on_stock_subscribe_message_callback(self, channel, method, properties, data):
         data = json.loads(data)
@@ -122,7 +130,7 @@ class QARTCStockBarResampler(QA_Thread):
         pass
 
     def on_message_callback(self, channel, method, properties, body):
-        context = pd.read_msgpack(body)
+        context = pd.DataFrame(json.loads(body, object_hook=object_hook)).set_index(['datetime', 'code'])
         # merge update
         if self.market_data is None:
             # self.market_data = context
@@ -149,7 +157,7 @@ class QARTCStockBarResampler(QA_Thread):
             cost_time = (end_time - cur_time).total_seconds()
             logger.info("数据重采样耗时,cost: %s" % cost_time)
             logger.info("发送重采样数据中start")
-            self.publish_msg(bar_data.to_msgpack())
+            self.publish_msg(bar_data)
             logger.info("发送重采样数据完毕end")
 
             logger.info(bar_data.to_csv(float_format='%.3f'))
@@ -173,6 +181,27 @@ class QARTCStockBarResampler(QA_Thread):
             else:
                 time.sleep(1)
 
+class QAJSONEncoder(JSONEncoder):
+    def default(self, o):
+        if isinstance(o, datetime.datetime):
+            return {'value': o.strftime('%Y-%m-%d %H:%M:%S'), '_spec_type': 'datetime'}
+        elif isinstance(o, int):
+            return int(o)
+        elif isinstance(o, float):
+            return float(o)
+        else:
+            return super(QAJSONEncoder, self).default(o)
+
+def object_hook(obj):
+    _spec_type = obj.get('_spec_type')
+    if not _spec_type:
+        return obj
+
+    if _spec_type == 'datetime':
+        return dateutil.parser.parse(obj.get('value'))
+    else:
+        raise Exception('Unknown {}'.format(_spec_type))
+
 
 @click.command()
 # @click.argument()
@@ -181,13 +210,13 @@ class QARTCStockBarResampler(QA_Thread):
 @click.option('-log_dir', '--log_dir', help="log path", type=click.Path(exists=False))
 def main(frequency: str, logfile: str = None, log_dir: str = None):
     try:
-        from utils.logconf import update_log_file_config
+        from QUANTAXIS.QARealtimeCollector.utils.logconf import update_log_file_config
         logfile = 'stock.resample.log' if logfile is None else logfile
         logging.config.dictConfig(update_log_file_config(logfile))
     except Exception as e:
         print(e.__str__())
     # TODO suuport codelist file
-    QARTCStockBarResampler(frequency=frequency, log_dir=log_dir.replace('~', os.path.expanduser('~'))).run()
+    QARTCStockBarResampler(frequency='1min').run()
 
 
 if __name__ == '__main__':

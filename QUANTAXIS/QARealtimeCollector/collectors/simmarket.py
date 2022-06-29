@@ -3,7 +3,7 @@ import json
 import time
 
 from QUANTAXIS.QAPUBSUB.producer import publisher_routing
-from QUANTAXIS.QUANTAXIS_RandomPrice import get_random_price
+# from QUANTAXIS.QUANTAXIS_RandomPrice import get_random_price
 from QUANTAXIS.QARealtimeCollector.setting import eventmq_ip, mongo_ip
 
 
@@ -19,7 +19,8 @@ class QARTC_RandomTick():
 
     @property
     def data(self):
-        return get_random_price(self.price, self.code, self.date)
+        # return get_random_price(self.price, self.code, self.date)
+        pass
 
     def start(self):
         for _, item in self.data.iterrows():

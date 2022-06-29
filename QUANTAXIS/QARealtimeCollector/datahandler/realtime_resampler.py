@@ -1,10 +1,10 @@
 #
-from QAPUBSUB.consumer import subscriber
-from QAPUBSUB.producer import publisher
+from QUANTAXIS.QAPUBSUB.consumer import subscriber
+from QUANTAXIS.QAPUBSUB.producer import publisher
 from QUANTAXIS.QAEngine.QAThreadEngine import QA_Thread
 from QUANTAXIS.QAData.data_resample import QA_data_futuremin_resample, QA_data_futuremin_resample_tb_kq
 from QUANTAXIS.QAUtil.QADate_trade import QA_util_future_to_tradedatetime
-from QARealtimeCollector.setting import eventmq_ip
+from QUANTAXIS.QARealtimeCollector.setting import eventmq_ip
 import json
 import pandas as pd
 import numpy as np

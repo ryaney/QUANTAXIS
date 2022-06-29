@@ -60,6 +60,7 @@ class QARTC_Stock(QA_Tdx_Executor):
     def get_data(self):
         data, time = self.get_realtime_concurrent(self.codelist)
         data = QA_util_to_json_from_pandas(data.reset_index())
+        print(json.dumps(data))
         self.pub.pub(json.dumps(data))
 
     def run(self):
@@ -72,8 +73,7 @@ class QARTC_Stock(QA_Tdx_Executor):
 
 if __name__ == "__main__":
     r = QARTC_Stock()
-    r.subscribe('000001')
-    r.subscribe('000002')
+    r.subscribe('600519')
     r.start()
 
     r.subscribe('600010')

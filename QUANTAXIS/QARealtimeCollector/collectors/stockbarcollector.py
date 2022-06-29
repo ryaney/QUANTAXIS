@@ -16,8 +16,11 @@ import logging
 import os
 import threading
 import time
+from json import JSONEncoder
 
 import click
+
+from QUANTAXIS import QA_util_to_json_from_pandas
 from QUANTAXIS.QAPUBSUB.consumer import subscriber_routing
 from QUANTAXIS.QAPUBSUB.producer import publisher
 from QUANTAXIS.QARealtimeCollector.setting import eventmq_ip
@@ -89,7 +92,9 @@ class QARTCStockBar(QA_Tdx_Executor):
         self.code_list.remove(code)
 
     def publish_msg(self, msg):
-        self.pub.pub(msg)
+        # data = QA_util_to_json_from_pandas(msg.reset_index())
+        print(json.dumps(msg.reset_index().to_dict(orient='records'), cls=QAJSONEncoder))
+        self.pub.pub(json.dumps(msg.reset_index().to_dict(orient='records'), cls=QAJSONEncoder))
 
     def callback(self, a, b, c, data):
         """
@@ -162,7 +167,7 @@ class QARTCStockBar(QA_Tdx_Executor):
                 qa_data = data.select_code(code)
                 if qa_data is not None:
                     # TODO 规定标准columns
-                    self.publish_msg(qa_data.data.to_msgpack())
+                    self.publish_msg(qa_data.data)
         else:
             lens = 0  # initial data len
             if frequency in ['5', '5m', '5min', 'five']:
@@ -261,7 +266,7 @@ class QARTCStockBar(QA_Tdx_Executor):
         logger.info(context.to_csv(float_format='%.3f'))
         filename = get_file_name_by_date('stock.collector.%s.csv', self.log_dir)
         logging_csv(context, filename, index=True)
-        self.publish_msg(context.to_msgpack())  # send with maspack
+        self.publish_msg(context)  # send with maspack
         del context
 
     def run(self):
@@ -290,6 +295,17 @@ class QARTCStockBar(QA_Tdx_Executor):
             self.isRequesting = False
             time.sleep(self.delay)
 
+class QAJSONEncoder(JSONEncoder):
+    def default(self, o):
+        if isinstance(o, datetime.datetime):
+            return {'value': o.strftime('%Y-%m-%d %H:%M:%S'), '_spec_type': 'datetime'}
+        elif isinstance(o, int):
+            return int(o)
+        elif isinstance(o, float):
+            return float(o)
+        else:
+            return super(QAJSONEncoder, self).default(o)
+
 
 @click.command()
 # @click.argument()
@@ -298,12 +314,12 @@ class QARTCStockBar(QA_Tdx_Executor):
 @click.option('-log_dir', '--log_dir', help="log path", type=click.Path(exists=False))
 def main(delay: float = 20.5, logfile: str = None, log_dir: str = None):
     try:
-        from QARealtimeCollector.utils.logconf import update_log_file_config
+        from QUANTAXIS.QARealtimeCollector.utils.logconf import update_log_file_config
         logfile = 'stock.collector.log' if logfile is None else logfile
         logging.config.dictConfig(update_log_file_config(logfile))
     except Exception as e:
         print(e.__str__())
-    QARTCStockBar(delay=delay, log_dir=log_dir.replace('~', os.path.expanduser('~')), debug=False).start()
+    QARTCStockBar(delay=delay, debug=True).start()
 
 
 if __name__ == "__main__":

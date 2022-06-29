@@ -52,6 +52,7 @@ def create_empty_stock_df(code, date: datetime.datetime = None, frequency=1):
     df['close'] = 0
     df['vol'] = 0
     df['amount'] = 0
+    df['update'] = cur_date
     # df['year'] = cur_date.year
     # df['month'] = cur_date.month
     # df['day'] = cur_date.day

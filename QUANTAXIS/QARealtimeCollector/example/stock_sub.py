@@ -19,9 +19,10 @@ class client(QA_Thread):
         self.last_ab = pd.DataFrame()
         self.sub = subscriber(exchange='stocktransaction')
         self.sub.callback = self.callback
+        threading.Thread(target=self.sub.start, daemon=True).start()
 
     def subscribe(self, code='000007'):
-        req.pub(json.dumps({'topic': 'subscribe', 'code': code}),
+        self.req.pub(json.dumps({'topic': 'subscribe', 'code': code}),
                 routing_key='stock')
 
     def callback(self, a, b, c, data):
@@ -34,7 +35,6 @@ class client(QA_Thread):
                   'data': data})
 
     def run(self):
-        threading.Thread(target=self.sub.start, daemon=True).start()
         while True:
             try:
                 jobs = self.queue.get_nowait()
@@ -42,7 +42,7 @@ class client(QA_Thread):
                     print(jobs['data'] - self.last_ab)
 
                     self.last_ab = jobs['data']
-                
+
             except Exception as e:
                 print(e)
 
