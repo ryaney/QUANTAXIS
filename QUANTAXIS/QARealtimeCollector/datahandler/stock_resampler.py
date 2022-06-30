@@ -23,6 +23,7 @@ from json.decoder import FLAGS
 import click
 import dateutil
 import pandas as pd
+from pandas import Period
 
 from QUANTAXIS import QA_util_to_json_from_pandas
 from QUANTAXIS.QAPUBSUB.consumer import subscriber, subscriber_routing
@@ -73,7 +74,7 @@ class QARTCStockBarResampler(QA_Thread):
         self.stock_sub = subscriber_routing(host=eventmq_ip, exchange='QARealtime_Market', routing_key='stock')
         self.stock_sub.callback = self.on_stock_subscribe_message_callback
         # 发送重采样的数据
-        self.pub = publisher(host=eventmq_ip, exchange='realtime_stock_{}_min'.format(self.frequency))
+        self.pub = publisher(host=eventmq_ip, exchange='realtime_stock_{}min'.format(self.frequency))
         self.count = 0
         self.code_list = []
         cur_time = datetime.datetime.now() if date is None else date
@@ -142,7 +143,7 @@ class QARTCStockBarResampler(QA_Thread):
             end_time = datetime.datetime.now()
             cost_time = (end_time - cur_time).total_seconds()
             logger.info("Before market_data, concat and update end, 合并市场数据, 耗时,cost: %s s" % cost_time)
-            logger.info(self.market_data.to_csv(float_format='%.3f'))
+            # logger.info(self.market_data.to_csv(float_format='%.3f'))
             filename = get_file_name_by_date('stock.market.%s.csv', self.log_dir)
             # 不追加，复写
             logging_csv(self.market_data, filename, index=True, mode='w')
@@ -160,7 +161,7 @@ class QARTCStockBarResampler(QA_Thread):
             self.publish_msg(bar_data)
             logger.info("发送重采样数据完毕end")
 
-            logger.info(bar_data.to_csv(float_format='%.3f'))
+            # logger.info(bar_data.to_csv(float_format='%.3f'))
             filename = get_file_name_by_date('stock.bar.%s.csv', self.log_dir)
             # 不追加，复写
             logging_csv(bar_data, filename, index=True, mode='w')
@@ -189,6 +190,8 @@ class QAJSONEncoder(JSONEncoder):
             return int(o)
         elif isinstance(o, float):
             return float(o)
+        elif isinstance(o, Period):
+            return str(o)
         else:
             return super(QAJSONEncoder, self).default(o)
 
@@ -216,7 +219,7 @@ def main(frequency: str, logfile: str = None, log_dir: str = None):
     except Exception as e:
         print(e.__str__())
     # TODO suuport codelist file
-    QARTCStockBarResampler(frequency='1min').run()
+    QARTCStockBarResampler(frequency='5min').run()
 
 
 if __name__ == '__main__':

@@ -125,7 +125,7 @@ class QARTCStockBar(QA_Tdx_Executor):
             else:
                 self.unsubscribe_callback(new_ins)
 
-    def get_data(self, frequency="1min", lens=5):
+    def get_data(self, frequency="1min", lens=240):
         """
         调用tdx获取数据
         :param frequency:

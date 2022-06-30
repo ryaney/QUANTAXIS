@@ -52,7 +52,7 @@ class RTCCaluator(QA_Thread):
 
         # 接收stock 重采样的数据
         self.sub = subscriber(
-            host=eventmq_ip, exchange='realtime_stock_{}_min'.format(self.frequency))
+            host=eventmq_ip, exchange='realtime_stock_{}min'.format(self.frequency))
         self.sub.callback = self.stock_min_callback
         # 发送stock indicator result
         self.pub = publisher_topic(
