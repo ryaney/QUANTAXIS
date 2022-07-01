@@ -7,7 +7,7 @@ from QUANTAXIS.QARealtimeCollector.clients import QARTC_Clients
 from QUANTAXIS.QARealtimeCollector.collectors import (QARTC_CtpBeeCollector,
                                             QARTC_CTPTickCollector,
                                             QARTC_RandomTick, QARTC_Stock,
-                                            QARTC_WsCollector)
+                                            QARTCStockBar,QARTC_WsCollector)
 from QUANTAXIS.QARealtimeCollector.datahandler import QARTC_Resampler
 
 
@@ -22,6 +22,13 @@ def start(code):
 @click.option('--code', default='rb2001')
 def start_ctp(code):
     r = QARTC_CTPTickCollector(code)
+    r.start()
+
+@click.command()
+@click.option('--delay', default=20.5)
+@click.option('--debug', default=False)
+def start_stock(delay, debug):
+    r = QARTCStockBar(delay, debug)
     r.start()
 
 
