@@ -29,12 +29,12 @@ def read(fname):
     return codecs.open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 
-NAME = "qarealtime_collector"
+NAME = "QARealtimeCollector"
 """
 """
 # PACKAGES = ["QARealtimeCollector", "QARealtimeCollector.collectors",
 #             "QARealtimeCollector.clients", "QARealtimeCollector.datahandler"]
-PACKAGES = find_packages(exclude=['example','docker','utils','calculator','connector'])
+PACKAGES = find_packages()
 """
 """
 
