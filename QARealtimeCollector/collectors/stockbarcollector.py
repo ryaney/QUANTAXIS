@@ -312,14 +312,15 @@ class QAJSONEncoder(JSONEncoder):
 @click.option('-t', '--delay', default=20.5, help="fetch data interval, float", type=click.FLOAT)
 @click.option('-log', '--logfile', help="log file path", type=click.Path(exists=False))
 @click.option('-log_dir', '--log_dir', help="log path", type=click.Path(exists=False))
-def main(delay: float = 20.5, logfile: str = None, log_dir: str = None):
+@click.option('-d', '--debug', default=True, help="debug mode", type=click.BOOL)
+def main(delay: float = 20.5, logfile: str = None, log_dir: str = None, debug: bool = True):
     try:
         from QARealtimeCollector.utils.logconf import update_log_file_config
         logfile = 'stock.collector.log' if logfile is None else logfile
         logging.config.dictConfig(update_log_file_config(logfile))
     except Exception as e:
         print(e.__str__())
-    QARTCStockBar(delay=delay, debug=True).start()
+    QARTCStockBar(delay=delay, debug = debug).start()
 
 
 if __name__ == "__main__":
