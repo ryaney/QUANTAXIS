@@ -44,8 +44,8 @@ setup(
     install_requires=['pika==1.0.0b1', 'quantaxis>=1.4.8'],
     entry_points={
         'console_scripts': [
-            'qaps_pub = QAPUBSUB.__init__:debug_pub',
-            'qaps_sub = QAPUBSUB.__init__:debug_sub'
+            'qaps_pub = QUANTAXIS.QAPUBSUB.__init__:debug_pub',
+            'qaps_sub = QUANTAXIS.QAPUBSUB.__init__:debug_sub'
         ]
     },
     keywords=KEYWORDS,

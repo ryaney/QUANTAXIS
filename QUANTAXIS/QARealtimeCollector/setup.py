@@ -68,13 +68,13 @@ setup(
                       'quantaxis-otgbroker', 'quantaxis-randomprice','quantaxis_webserver'],
     entry_points={
         'console_scripts': [
-            'QARC_Start = QARealtimeCollector.__init__:start',
-            'QARC_Resample = QARealtimeCollector.__init__:resample',
-            'QARC_Random = QARealtimeCollector.__init__:random',
-            'QARC_Fast = QARealtimeCollector.__init__:faststart',
-            'QARC_CTP = QARealtimeCollector.__init__:start_ctp',
-            'QARC_Stock = QARealtimeCollector.__init__:start_stock',
-            'QARC_WEBSERVER = QARealtimeCollector.webserver:main'
+            'QARC_Start = QUANTAXIS.QARealtimeCollector.__init__:start',
+            'QARC_Resample = QUANTAXIS.QARealtimeCollector.__init__:resample',
+            'QARC_Random = QUANTAXIS.QARealtimeCollector.__init__:random',
+            'QARC_Fast = QUANTAXIS.QARealtimeCollector.__init__:faststart',
+            'QARC_CTP = QUANTAXIS.QARealtimeCollector.__init__:start_ctp',
+            'QARC_Stock = QUANTAXIS.QARealtimeCollector.__init__:start_stock',
+            'QARC_WEBSERVER = QUANTAXIS.QARealtimeCollector.webserver:main'
         ]
     },
     # install_requires=requirements,
