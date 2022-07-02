@@ -15,7 +15,7 @@ from qaenv import (eventmq_ip, eventmq_password, eventmq_port,
 from QAPUBSUB.consumer import subscriber, subscriber_routing
 from QAPUBSUB.producer import publisher_routing, publisher_topic
 
-from QUANTAXIS.QIFIAccount import QIFI_Account
+from QIFIAccount import QIFI_Account
 
 import QUANTAXIS as QA
 from QUANTAXIS.QAARP import QA_Risk, QA_User

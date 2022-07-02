@@ -3,4 +3,4 @@ __author__ = 'yutiansut'
 
 
 from QUANTAXIS.QAData import QA_data_futuremin_resample
-from QUANTAXIS.QAStrategy.qactabase import QAStrategyCTABase
+from QAStrategy.qactabase import QAStrategyCTABase

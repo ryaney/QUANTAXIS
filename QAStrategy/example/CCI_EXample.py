@@ -1,4 +1,4 @@
-from QUANTAXIS.QAStrategy import QAStrategyCTABase
+from QAStrategy import QAStrategyCTABase
 import QUANTAXIS as QA
 
 

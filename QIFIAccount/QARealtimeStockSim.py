@@ -9,7 +9,7 @@ from qaenv import eventmq_ip, eventmq_port, mongo_ip
 from QAPUBSUB import producer
 from QAPUBSUB.consumer import subscriber_routing, subscriber_topic
 
-from QUANTAXIS.QIFIAccount.QAQIFIAccount import QIFI_Account
+from QIFIAccount.QAQIFIAccount import QIFI_Account
 
 
 class QIFI_StockSIM_Account(QIFI_Account):

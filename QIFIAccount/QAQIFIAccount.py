@@ -4,7 +4,7 @@ import traceback
 import pymongo
 from qaenv import mongo_ip
 
-from QUANTAXIS.QIFIAccount.QAPosition import QA_Position
+from QIFIAccount.QAPosition import QA_Position
 from QUANTAXIS.QAARP.market_preset import MARKET_PRESET
 
 

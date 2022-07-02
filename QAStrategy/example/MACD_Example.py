@@ -2,8 +2,8 @@ import datetime
 import pprint
 
 import QUANTAXIS as QA
-from QUANTAXIS.QAStrategy import QAStrategyCTABase
-from QUANTAXIS.QAStrategy.qastockbase import QAStrategyStockBase
+from QAStrategy import QAStrategyCTABase
+from QAStrategy.qastockbase import QAStrategyStockBase
 
 
 class MACD(QAStrategyStockBase):
