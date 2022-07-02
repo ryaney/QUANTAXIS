@@ -74,6 +74,7 @@ setup(
             'QARC_Fast = QARealtimeCollector.__init__:faststart',
             'QARC_CTP = QARealtimeCollector.__init__:start_ctp',
             'QARC_Stock = QARealtimeCollector.collectors.stockbarcollector:main',
+            'QARC_StockResample = QARealtimeCollector.datahandler.stock_resampler:main',
             'QARC_WEBSERVER = QARealtimeCollector.webserver:main'
         ]
     },
