@@ -12,8 +12,8 @@ import pymongo
 import requests
 from qaenv import (eventmq_ip, eventmq_password, eventmq_port,
                    eventmq_username, mongo_ip)
-from QUANTAXIS.QAPUBSUB.consumer import subscriber, subscriber_routing
-from QUANTAXIS.QAPUBSUB.producer import publisher_routing, publisher_topic
+from QAPUBSUB.consumer import subscriber, subscriber_routing
+from QAPUBSUB.producer import publisher_routing, publisher_topic
 
 from QUANTAXIS.QIFIAccount import QIFI_Account
 

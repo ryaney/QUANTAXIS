@@ -21,8 +21,8 @@ import QUANTAXIS as QA
 from QUANTAXIS.QAARP import QA_Risk, QA_User
 from QUANTAXIS.QAEngine.QAThreadEngine import QA_Thread
 from QUANTAXIS.QAUtil.QAParameter import MARKET_TYPE, RUNNING_ENVIRONMENT, ORDER_DIRECTION
-from QUANTAXIS.QAPUBSUB.consumer import subscriber_topic, subscriber_routing, subscriber
-from QUANTAXIS.QAPUBSUB.producer import publisher_routing
+from QAPUBSUB.consumer import subscriber_topic, subscriber_routing, subscriber
+from QAPUBSUB.producer import publisher_routing
 from QUANTAXIS.QAStrategy.qactabase import QAStrategyCTABase
 from QUANTAXIS.QIFIAccount import QIFI_Account
 

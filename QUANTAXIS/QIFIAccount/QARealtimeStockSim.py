@@ -6,8 +6,8 @@ import uuid
 
 import pymongo
 from qaenv import eventmq_ip, eventmq_port, mongo_ip
-from QUANTAXIS.QAPUBSUB import producer
-from QUANTAXIS.QAPUBSUB.consumer import subscriber_routing, subscriber_topic
+from QAPUBSUB import producer
+from QAPUBSUB.consumer import subscriber_routing, subscriber_topic
 
 from QUANTAXIS.QIFIAccount.QAQIFIAccount import QIFI_Account
 
