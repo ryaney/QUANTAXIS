@@ -7,16 +7,16 @@ import webbrowser
 import platform
 
 try:
-    from setuptools import setup
+    from setuptools import setup,find_packages
 except:
     from distutils.core import setup
 
 
-NAME = "quantaxis_webserver"
+NAME = "QAWebServer"
 """
 名字，一般放你包的名字即可
 """
-PACKAGES = ["QAWebServer"]
+PACKAGES = find_packages()
 """
 包含的包，可以多个，这是一个列表
 """

@@ -31,7 +31,7 @@ import webbrowser
 import platform
 import configparser
 try:
-    from setuptools import setup
+    from setuptools import setup,find_packages
 except:
     from distutils.core import setup
 """
@@ -46,11 +46,11 @@ def read(fname):
     return codecs.open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 
-NAME = "qifiaccount"
+NAME = "QIFIAccount"
 """
 
 """
-PACKAGES = ["QIFIAccount"]
+PACKAGES = find_packages()
 """
 
 """
