@@ -46,6 +46,7 @@ from threading import Thread, Timer
 import click
 import pandas as pd
 import pymongo
+from retrying import retry
 
 from QUANTAXIS.QAEngine.QAThreadEngine import QA_Thread
 from QUANTAXIS.QAFetch.QATdx import QA_fetch_get_stock_min, get_mainmarket_ip
@@ -212,6 +213,7 @@ class QA_Tdx_Executor(QA_Thread):
         except:
             pass
 
+    @retry(stop_max_attempt_number=3, wait_random_min=50, wait_random_max=100)
     def get_security_bar_concurrent(self, code_list, _type, lens):
         """
 

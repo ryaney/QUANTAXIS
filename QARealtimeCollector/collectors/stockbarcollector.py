@@ -93,8 +93,9 @@ class QARTCStockBar(QA_Tdx_Executor):
 
     def publish_msg(self, msg):
         # data = QA_util_to_json_from_pandas(msg.reset_index())
-        print(json.dumps(msg.reset_index().to_dict(orient='records'), cls=QAJSONEncoder))
-        self.pub.pub(json.dumps(msg.reset_index().to_dict(orient='records'), cls=QAJSONEncoder))
+        json_str = json.dumps(msg.reset_index().to_dict(orient='records'), cls=QAJSONEncoder)
+        logger.info("publish stock bar data: %s" % json_str)
+        self.pub.pub(json_str)
 
     def callback(self, a, b, c, data):
         """
@@ -283,10 +284,7 @@ class QARTCStockBar(QA_Tdx_Executor):
             self.isRequesting = True
             # 9:15 - 11:31 and 12：58 - 15:00 获取
             cur_time = datetime.datetime.now()
-            _pass = (cur_time - self.last_update_time).total_seconds()
             if  self.debug or util_is_trade_time(cur_time):  # 如果在交易时间
-                if  _pass > 55:
-                    logger.warning("超时未收到更新数据")
                 self.update_data_job()
             else:
                 logger.info('current time %s not in trade time' % cur_time.isoformat())
@@ -309,7 +307,7 @@ class QAJSONEncoder(JSONEncoder):
 
 @click.command()
 # @click.argument()
-@click.option('-t', '--delay', default=20.5, help="fetch data interval, float", type=click.FLOAT)
+@click.option('-t', '--delay', default=60, help="fetch data interval, float", type=click.FLOAT)
 @click.option('-log', '--logfile', help="log file path", type=click.Path(exists=False))
 @click.option('-log_dir', '--log_dir', help="log path", type=click.Path(exists=False))
 @click.option('-d', '--debug', default=True, help="debug mode", type=click.BOOL)

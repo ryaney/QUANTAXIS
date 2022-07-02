@@ -12,13 +12,16 @@
 import datetime
 import os
 
+import dateutil
+
+from QUANTAXIS.QASU.save_tdx import now_time
 from QUANTAXIS.QAUtil.QADate_trade import QA_util_if_trade
 from QUANTAXIS.QAUtil.QAParameter import MARKET_TYPE
 from joblib import Parallel, delayed
 from pandas import concat, date_range, DataFrame, DatetimeIndex
 
 
-def create_empty_stock_df(code, date: datetime.datetime = None, frequency=1):
+def create_empty_stock_df(code, frequency=1):
     """
     创建空K线表并填0
     :param code:
@@ -29,7 +32,7 @@ def create_empty_stock_df(code, date: datetime.datetime = None, frequency=1):
     if isinstance(code, list):
         return
     code = fill_stock_code(code)
-    cur_date = datetime.datetime.now() if date is None else date
+    cur_date = dateutil.parser.parse(now_time())
     cur_day = cur_date.isoformat()[:10]
     # TODO confirm , 9:31 - 11:29, 13:00 - 15:00
     # morning = date_range('%s 9:31' % cur_day, periods=119, freq='T').to_list()
@@ -52,7 +55,7 @@ def create_empty_stock_df(code, date: datetime.datetime = None, frequency=1):
     df['close'] = 0
     df['vol'] = 0
     df['amount'] = 0
-    df['update'] = cur_date
+    df['update'] = datetime.datetime.now()
     # df['year'] = cur_date.year
     # df['month'] = cur_date.month
     # df['day'] = cur_date.day

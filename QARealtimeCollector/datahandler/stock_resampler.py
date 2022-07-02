@@ -90,8 +90,9 @@ class QARTCStockBarResampler(QA_Thread):
 
     def publish_msg(self, text):
         # data = QA_util_to_json_from_pandas(text.reset_index())
-        print(json.dumps(text.reset_index().to_dict(orient='records'), cls=QAJSONEncoder))
-        self.pub.pub(json.dumps(text.reset_index().to_dict(orient='records'), cls=QAJSONEncoder))
+        json_str = json.dumps(text.reset_index().to_dict(orient='records'), cls=QAJSONEncoder)
+        logger.info("publish stock resample bar data: %s" % json_str)
+        self.pub.pub(json_str)
 
     def on_stock_subscribe_message_callback(self, channel, method, properties, data):
         data = json.loads(data)
@@ -120,8 +121,7 @@ class QARTCStockBarResampler(QA_Thread):
             # initial time series data
             # date=datetime.datetime(2019, 5, 9)
             self.market_data = pd.concat([
-                self.market_data, create_empty_stock_df(code, date=datetime.datetime(self.cur_year, self.cur_month,
-                                                                                     self.cur_day))
+                self.market_data, create_empty_stock_df(code)
             ])
             logger.info("当日数据初始化中,%s" % code)
         pass
@@ -143,6 +143,9 @@ class QARTCStockBarResampler(QA_Thread):
             end_time = datetime.datetime.now()
             cost_time = (end_time - cur_time).total_seconds()
             logger.info("Before market_data, concat and update end, 合并市场数据, 耗时,cost: %s s" % cost_time)
+            if self.market_data[self.market_data.close > 0].empty:
+                logger.info("market_data is empty, continue")
+                return
             # logger.info(self.market_data.to_csv(float_format='%.3f'))
             filename = get_file_name_by_date('stock.market.%s.csv', self.log_dir)
             # 不追加，复写
