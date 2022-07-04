@@ -96,7 +96,9 @@ class QAStrategyStockBase(QAStrategyCTABase):
 
         self.new_data = pd.DataFrame(json.loads(body, object_hook=object_hook))
 
-        self.latest_price[self.new_data['code']] = self.new_data['close']
+        # self.latest_price[self.new_data['code']] = self.new_data['close']
+        for item in self.code:
+            self.latest_price[item] = self.new_data[self.new_data.code == item]['close']
 
         self.running_time = self.new_data['datetime']
         if self.dt != str(self.new_data['datetime'])[0:16]:

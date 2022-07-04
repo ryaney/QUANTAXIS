@@ -39,7 +39,7 @@ class MACD(QAStrategyStockBase):
 
 
 if __name__ == '__main__':
-    MACD = MACD(code='600519', frequence='5min', data_host='localhost', mongo_ip='localhost', trade_host='localhost', send_wx=True,
+    MACD = MACD(code=['600519','000001'], frequence='5min', data_host='localhost', mongo_ip='localhost', trade_host='localhost', send_wx=True,
                 strategy_id='1dds1s2d-7902-4a85-adb2-fbac4bb977fg', start='2022-01-01', end=datetime.datetime.now())
     MACD.run_sim()
     # MACD.run_backtest()

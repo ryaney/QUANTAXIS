@@ -211,6 +211,8 @@ def tdx_bar_data_stock_resample_parallel(min_data, period=5):
     if period > 60:
         _base = 60
     return [
+        # 即使重采样时间点未到，当前时间段内的bar线依然能够生成，这就导致重采样时间点到达后，
+        # 数据已经发生了变化，策略会有差异，所以需要等bar线完全生成后再触发策略
         min_data_morning.resample(
             _period, label="right", closed="right", kind="period", loffset="0min", base=30 + _base).apply(
             _conversion),

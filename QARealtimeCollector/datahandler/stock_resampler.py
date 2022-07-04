@@ -91,7 +91,7 @@ class QARTCStockBarResampler(QA_Thread):
     def publish_msg(self, text):
         # data = QA_util_to_json_from_pandas(text.reset_index())
         json_str = json.dumps(text.reset_index().to_dict(orient='records'), cls=QAJSONEncoder)
-        logger.info("publish stock resample bar data: %s" % json_str)
+        logger.info("bar data publish: %s" % json_str)
         self.pub.pub(json_str)
 
     def on_stock_subscribe_message_callback(self, channel, method, properties, data):
@@ -160,8 +160,21 @@ class QARTCStockBarResampler(QA_Thread):
             end_time = datetime.datetime.now()
             cost_time = (end_time - cur_time).total_seconds()
             logger.info("数据重采样耗时,cost: %s" % cost_time)
+
+            # 按照code取倒数第一个bar，当前时间大于bar datetime时publish
+            bar_data = bar_data.reset_index()
+            send_data = None
+            for item in self.code_list:
+                send_data = pd.concat([send_data, bar_data[bar_data.code == item][bar_data.datetime == bar_data.datetime.max()]])
+
+            # 如果当前是交易时间，当前分钟时间 > send_data time，则发送
+            # 如果当前不是交易时间，market_data time > send data time，则发送
             logger.info("发送重采样数据中start")
-            self.publish_msg(bar_data)
+            if util_is_trade_time(cur_time):
+                pass
+            else:
+                pass
+            self.publish_msg(send_data)
             logger.info("发送重采样数据完毕end")
 
             # logger.info(bar_data.to_csv(float_format='%.3f'))
