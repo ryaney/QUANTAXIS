@@ -307,7 +307,7 @@ class QAJSONEncoder(JSONEncoder):
 
 @click.command()
 # @click.argument()
-@click.option('-t', '--delay', default=60, help="fetch data interval, float", type=click.FLOAT)
+@click.option('-t', '--delay', default=20.5, help="fetch data interval, float", type=click.FLOAT)
 @click.option('-log', '--logfile', help="log file path", type=click.Path(exists=False))
 @click.option('-log_dir', '--log_dir', help="log path", type=click.Path(exists=False))
 @click.option('-d', '--debug', default=True, help="debug mode", type=click.BOOL)

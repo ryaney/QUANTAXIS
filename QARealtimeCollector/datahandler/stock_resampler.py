@@ -84,6 +84,7 @@ class QARTCStockBarResampler(QA_Thread):
         # 多进程计算
         self.cpu_count = multiprocessing.cpu_count() - 1
         self.log_dir = log_dir
+        self.send_data = None
         threading.Thread(target=self.sub.start, daemon=True).start()
         threading.Thread(target=self.stock_sub.start, daemon=True).start()
 
@@ -161,21 +162,23 @@ class QARTCStockBarResampler(QA_Thread):
             cost_time = (end_time - cur_time).total_seconds()
             logger.info("数据重采样耗时,cost: %s" % cost_time)
 
-            # 按照code取倒数第一个bar，当前时间大于bar datetime时publish
-            bar_data = bar_data.reset_index()
-            send_data = None
-            for item in self.code_list:
-                send_data = pd.concat([send_data, bar_data[bar_data.code == item][bar_data.datetime == bar_data.datetime.max()]])
-
             # 如果当前是交易时间，当前分钟时间 > send_data time，则发送
             # 如果当前不是交易时间，market_data time > send data time，则发送
-            logger.info("发送重采样数据中start")
-            if util_is_trade_time(cur_time):
-                pass
-            else:
-                pass
-            self.publish_msg(send_data)
-            logger.info("发送重采样数据完毕end")
+            # TODO 代码待优化
+            self.market_data = self.market_data.reset_index()
+            max_bar_time = self.market_data[self.market_data.close > 0].datetime.max()
+            self.market_data = self.market_data.set_index(['datetime', 'code'])
+            if self.send_data is not None:
+                if max_bar_time >= self.send_data.datetime.max() or max_bar_time.hour == 15:
+                    logger.info("发送重采样数据中start")
+                    self.publish_msg(self.send_data)
+                    logger.info("发送重采样数据完毕end")
+
+            # 按照code取倒数第一个bar，当前时间大于bar datetime时publish
+            bar_data = bar_data.reset_index()
+            self.send_data = None
+            for item in self.code_list:
+                self.send_data = pd.concat([self.send_data, bar_data[bar_data.code == item][bar_data.datetime == bar_data.datetime.max()]])
 
             # logger.info(bar_data.to_csv(float_format='%.3f'))
             filename = get_file_name_by_date('stock.bar.%s.csv', self.log_dir)
