@@ -14,12 +14,15 @@ import os
 
 import dateutil
 
-from QUANTAXIS.QASU.save_tdx import now_time
-from QUANTAXIS.QAUtil.QADate_trade import QA_util_if_trade
+from QUANTAXIS.QAUtil.QADate_trade import QA_util_if_trade, QA_util_get_real_date, trade_date_sse
 from QUANTAXIS.QAUtil.QAParameter import MARKET_TYPE
 from joblib import Parallel, delayed
 from pandas import concat, date_range, DataFrame, DatetimeIndex
 
+def now_time():
+    return str(QA_util_get_real_date(str(datetime.date.today()), trade_date_sse, -1)) + \
+           ' 15:00:00' if datetime.datetime.now().hour < 15 else str(QA_util_get_real_date(
+        str(datetime.date.today()), trade_date_sse, -1)) + ' 15:00:00'
 
 def create_empty_stock_df(code, frequency=1):
     """

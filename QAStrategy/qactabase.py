@@ -62,6 +62,18 @@ class QAStrategyCTABase():
         self.start = start
         self.end = end
         self.init_cash = init_cash
+        # 交易费率
+        self.commission = None
+        # 交易佣金
+        self.min_commission = None
+        # 印花税
+        self.open_tax = None
+        # 印花税
+        self.close_tax = None
+        # 调仓周期
+        self.refresh_days = None
+        self.running_mode = None
+
         self.taskid = taskid
 
         self.running_time = ''

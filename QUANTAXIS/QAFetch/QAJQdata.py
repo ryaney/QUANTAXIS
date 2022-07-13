@@ -1,22 +1,14 @@
 # coding:utf-8
 
-
-try: 
+try:
     import jqdatasdk
+    from jqdatasdk import income, cash_flow, query, valuation
     #jqdatasdk.auth(input('account:'),input('password:'))
 except:
     raise ModuleNotFoundError
 
 
-def get_price(code="600000.XSHG"):
-    return jqdatasdk.get_price(code,end_date='2018-05-14')
-
-
-
-if __name__ =='__main__':
-    print(get_price())
 """
-
 get_price
 
 可查询股票、基金、指数、期货的历史及当前交易日的行情数据
@@ -26,8 +18,35 @@ get_price
 可查询开盘价、收盘价、最高价、最低价、成交量、成交额、涨停、跌停、均价、前收价、是否停牌
 
 支持不同的复权方式
+"""
+def get_price(code="600000.XSHG"):
+    return jqdatasdk.get_price(code,end_date='2018-05-14')
 
-​
+"""
+查询财务数据，包含估值表、利润表、现金流量表、资产负债表、银行专项指标、证券专项指标、保险专项指标
+"""
+def get_fundamentals(query_object, start_date = None, end_date = None):
+    return jqdatasdk.get_fundamentals(query_object, start_date, end_date)
+
+
+if __name__ =='__main__':
+    jqdatasdk.auth(input('account:'), input('password:'))
+    # 查询平安银行2014年的年报
+    q = query(
+            valuation.code,
+            valuation.market_cap
+        ).filter(
+            valuation.market_cap.between(20,30)
+        ).order_by(
+            valuation.market_cap.asc()
+        )
+
+    df = get_fundamentals(q, '2022-07-01')
+    print(df)
+
+
+
+"""
 
 get_trade_days
 
@@ -96,12 +115,6 @@ get_security_info
 get_money_flow
 
 查询某只股票的资金流向数据
-
-​
-
-get_fundamentals
-
-查询财务数据，包含估值表、利润表、现金流量表、资产负债表、银行专项指标、证券专项指标、保险专项指标
 
 ​
 

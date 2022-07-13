@@ -167,9 +167,11 @@ class QARTCStockBarResampler(QA_Thread):
             # TODO 代码待优化
             self.market_data = self.market_data.reset_index()
             max_bar_time = self.market_data[self.market_data.close > 0].datetime.max()
+            print(self.market_data[self.market_data.close > 0].tail)
+            print(self.send_data)
             self.market_data = self.market_data.set_index(['datetime', 'code'])
             if self.send_data is not None:
-                if max_bar_time >= self.send_data.datetime.max() or max_bar_time.hour == 15:
+                if max_bar_time > self.send_data.datetime.max() or util_is_trade_time(datetime.datetime.now()) == False:
                     logger.info("发送重采样数据中start")
                     self.publish_msg(self.send_data)
                     logger.info("发送重采样数据完毕end")

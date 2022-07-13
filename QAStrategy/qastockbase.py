@@ -43,6 +43,37 @@ class QAStrategyStockBase(QAStrategyCTABase):
         self.code = code
         self.send_wx = send_wx
 
+    def init_account(self):
+        if self.running_mode == 'backtest':
+            self.database = pymongo.MongoClient(mongo_ip).QUANTAXIS
+            user = QA_User(username="admin", password='admin')
+            port = user.new_portfolio(self.portfolio)
+            self.acc = port.new_accountpro(
+                account_cookie=self.strategy_id, init_cash=self.init_cash, market_type=self.market_type,
+                frequence=self.frequence)
+            # self.positions = self.acc.get_position(self.code)
+
+            print(self.acc)
+
+            print(self.acc.market_type)
+        elif self.running_mode == 'sim':
+
+            self._old_data = QA.QA_fetch_stock_min(self.code, QA.QA_util_get_last_day(
+                QA.QA_util_get_real_date(str(datetime.date.today()))), str(datetime.datetime.now()), format='pd',
+                                                   frequence=self.frequence).set_index(['datetime', 'code'])
+
+            self._old_data = self._old_data.loc[:, [
+                                                       'open', 'high', 'low', 'close', 'volume']]
+
+            self.database = pymongo.MongoClient(mongo_ip).QAREALTIME
+
+            self.client = self.database.account
+            self.subscriber_client = self.database.subscribe
+
+            self.acc = QIFI_Account(
+                username=self.strategy_id, password=self.strategy_id, trade_host=mongo_ip)
+            self.acc.initial()
+
     def subscribe_data(self, code, frequence, data_host, data_port, data_user, data_password):
         """[summary]
 
@@ -114,22 +145,6 @@ class QAStrategyStockBase(QAStrategyCTABase):
         self.upcoming_data(bar)
 
     def _debug_sim(self):
-        self.running_mode = 'sim'
-
-        self._old_data = QA.QA_fetch_stock_min(self.code, QA.QA_util_get_last_day(
-            QA.QA_util_get_real_date(str(datetime.date.today()))), str(datetime.datetime.now()), format='pd', frequence=self.frequence).set_index(['datetime', 'code'])
-
-        self._old_data = self._old_data.loc[:, [
-            'open', 'high', 'low', 'close', 'volume']]
-
-        self.database = pymongo.MongoClient(mongo_ip).QAREALTIME
-
-        self.client = self.database.account
-        self.subscriber_client = self.database.subscribe
-
-        self.acc = QIFI_Account(
-            username=self.strategy_id, password=self.strategy_id, trade_host=mongo_ip)
-        self.acc.initial()
 
         self.pub = publisher_routing(exchange='QAORDER_ROUTER', host=self.trade_host,
                                      port=self.trade_port, user=self.trade_user, password=self.trade_password)
@@ -145,23 +160,8 @@ class QAStrategyStockBase(QAStrategyCTABase):
         # threading.Thread(target=, daemon=True).start()
         self.sub.start()
 
-    def run(self):
-        while True:
-            pass
-
-
     def debug(self):
-        self.running_mode = 'backtest'
-        self.database = pymongo.MongoClient(mongo_ip).QUANTAXIS
-        user = QA_User(username="admin", password='admin')
-        port = user.new_portfolio(self.portfolio)
-        self.acc = port.new_accountpro(
-            account_cookie=self.strategy_id, init_cash=self.init_cash, market_type=self.market_type, frequence= self.frequence)
-        #self.positions = self.acc.get_position(self.code)
 
-        print(self.acc)
-
-        print(self.acc.market_type)
         data = QA.QA_quotation(self.code, self.start, self.end, source=QA.DATASOURCE.MONGO,
                                frequence=self.frequence, market=self.market_type, output=QA.OUTPUT_FORMAT.DATASTRUCT)
 

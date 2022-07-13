@@ -74,7 +74,9 @@ class QA_AccountPRO(QA_Worker):
         init_hold={},
         init_cash=1000000,
         commission_coeff=0.00025,
-        tax_coeff=0.001,
+        min_commission = 5,
+        close_tax=0.001,
+        open_tax = 0,
         margin_level={},
         allow_t0=False,
         allow_sellopen=False,
@@ -124,7 +126,9 @@ class QA_AccountPRO(QA_Worker):
         self._market_data = None
         self._currenttime = None
         self.commission_coeff = commission_coeff
-        self.tax_coeff = tax_coeff
+        self.min_commission = min_commission
+        self.close_tax = close_tax
+        self.open_tax = open_tax
         self.datetime = None
         self.running_time = datetime.datetime.now()
         self.quantaxis_version = __version__
