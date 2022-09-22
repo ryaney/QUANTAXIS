@@ -723,24 +723,24 @@ def QA_fetch_get_stock_list(type_='stock', ip=None, port=None):
             # return res.assign(code=res.code.apply(lambda x: QA_util_code_tostr(x)))
             return pd.concat([sz, sh], sort=False).query(
                 'sec=="stock_cn"').sort_index().assign(
-                name=data['name'].apply(lambda x: str(x)[0:6]))
+                name=data['name'].drop_duplicates().apply(lambda x: str(x)[0:6]))
 
         elif type_ in ['index', 'zs']:
 
             return pd.concat([sz, sh], sort=False).query(
                 'sec=="index_cn"').sort_index().assign(
-                name=data['name'].apply(lambda x: str(x)[0:6]))
+                name=data['name'].drop_duplicates().apply(lambda x: str(x)[0:6]))
             # .assign(szm=data['name'].apply(lambda x: ''.join([y[0] for y in lazy_pinyin(x)])))\
             # .assign(quanpin=data['name'].apply(lambda x: ''.join(lazy_pinyin(x))))
         elif type_ in ['etf', 'ETF']:
             return pd.concat([sz, sh], sort=False).query(
                 'sec=="etf_cn"').sort_index().assign(
-                name=data['name'].apply(lambda x: str(x)[0:6]))
+                name=data['name'].drop_duplicates().apply(lambda x: str(x)[0:6]))
 
         else:
             return data.assign(
                 code=data['code'].apply(lambda x: str(x))).assign(
-                name=data['name'].apply(lambda x: str(x)[0:6]))
+                name=data['name'].drop_duplicates().apply(lambda x: str(x)[0:6]))
             # .assign(szm=data['name'].apply(lambda x: ''.join([y[0] for y in lazy_pinyin(x)])))\
             #    .assign(quanpin=data['name'].apply(lambda x: ''.join(lazy_pinyin(x))))
 
